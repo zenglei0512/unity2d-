@@ -10,50 +10,68 @@ public enum State
     leftRun,            //左跑状态
     rightRun,           //右跑状态
     leftJump,           //左跳跃状态
-    rightJump           //右跳跃状态
+    rightJump,          //右跳跃状态
+    Idle,               //闲置状态
+    Run,                //跑状态
+    Jump,               //跳跃状态
+    Fall,               //下落状态
 }
 
 public class playController : MonoBehaviour
 {
-    float h = 0, v = 0, jumpTime = 0.0f, jumpTimedt = 0.3f;
+    float h = 0;
+    float CapsuleSizeX;
+    public float speed = 5f, jumpSpeed = 10f;
     int jumpOnce = 0;
-    public float speed = 5f, jumpValue = 10f;
     public LayerMask ground;
-    public BoxCollider2D boxCollider2d;
     public bool isGameOver = false;
-    string runName = "rightRun";
+    bool isGround;
     Animator animator;
-    Rigidbody2D rigidbody2D;
-    State curState = State.rightIdle;
+    BoxCollider2D playerFeet;
+    CapsuleCollider2D Capsule;
+    Rigidbody2D playerBody;
+    State curState = State.Idle;
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponent<Animator>();
-        rigidbody2D = GetComponent<Rigidbody2D>();
+        Capsule = GetComponent<CapsuleCollider2D>();
+        playerFeet = GetComponent<BoxCollider2D>();
+        playerBody = GetComponent<Rigidbody2D>();
+        CapsuleSizeX = Capsule.size.x;
     }
 
     // Update is called once per frame
-    //void Update()
-    //{
-    //    playerRun();
-    //}
+    void Update()
+    {
+        //if (isGameOver)
+        //{
+        //    return;
+        //}
+        cheakGround();
+        playerFlip();
+        setPlayerCapsuleSize();
+    }
 
     private void FixedUpdate()
     {
         if (isGameOver)
         {
-            Time.timeScale = 0;
-            rigidbody2D.velocity = new Vector2(0, 0);
-            rigidbody2D.gravityScale = 0;
+            //Time.timeScale = 0;
+            playerBody.velocity = new Vector2(0, playerBody.velocity.y);
+            //playerBody.gravityScale = 0;
             return ;
         }
+        //cheakGround();
+        //playerFlip();
         playerRun();
         playerJump();
+        switchPlayerAnim();
     }
 
     public void playerRun()
     {
-        h = Input.GetAxisRaw("Horizontal"); //控制左右移动
+        /*h = Input.GetAxisRaw("Horizontal"); //控制左右移动
         //v = Input.GetAxisRaw("Vertical");   //控制上下移动
 
         if (h == 0)
@@ -86,9 +104,22 @@ public class playController : MonoBehaviour
             playerLeftRun();
         }
         animator.SetFloat(runName, h);
-        transform.Translate(h * Time.deltaTime * speed, 0, 0);
+        transform.Translate(h * Time.deltaTime * speed, 0, 0);*/
+
+        h = Input.GetAxisRaw("Horizontal"); //控制左右移动
+        Vector2 runVector = new Vector2(h * speed, playerBody.velocity.y);
+        playerBody.velocity = runVector;
+        //playerBody.velocity = Vector2.left * h * Time.deltaTime * speed;
+        //transform.Translate(h * Time.deltaTime * speed, 0, 0);
+        bool isRun = Mathf.Abs(playerBody.velocity.x) > Mathf.Epsilon;
+        animator.SetBool("isRun", isRun);
+        if (isRun)
+        {
+            curState = State.Run;
+        }
     }
 
+    /*
     public void playerLeftRun()
     {
         Debug.Log("向左移动中！");
@@ -132,24 +163,75 @@ public class playController : MonoBehaviour
             curState = State.rightJump;
         }
     }
+    */
+
+    //翻转人物
+    void playerFlip()
+    {
+        float playerSpeedX = h;
+        if (playerSpeedX > Mathf.Epsilon)
+        {
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+        } else if (Mathf.Abs(playerSpeedX) > Mathf.Epsilon)
+        {
+            transform.localRotation = Quaternion.Euler(0, 180, 0);
+        }
+    }
+
+    //检查人物脚是否接触到地面
+    void cheakGround()
+    {
+        isGround = playerFeet.IsTouchingLayers(LayerMask.GetMask("ground"));
+    }
+
+    //设置人物胶囊碰撞体大小
+    void setPlayerCapsuleSize()
+    {
+        float SpriteRendererSizeY = transform.GetComponent<SpriteRenderer>().bounds.size.y;
+        if (CapsuleSizeX < SpriteRendererSizeY)
+        {
+            Capsule.size = new Vector2(CapsuleSizeX, SpriteRendererSizeY);
+        } else
+        {
+            Capsule.size = new Vector2(SpriteRendererSizeY, SpriteRendererSizeY);
+        }
+    }
+
+    void switchPlayerAnim()
+    {
+        animator.SetBool("isIdle", false);
+        bool isJump = animator.GetBool("isJump");
+        if (isJump)
+        {
+            if (playerBody.velocity.y < 0)
+            {
+                animator.SetBool("isJump", false);
+                animator.SetBool("isFall", true);
+            }
+        } else if (isGround)
+        {
+            animator.SetBool("isFall", false);
+            animator.SetBool("isIdle", true);
+        }
+    }
 
     public void playerJump()
     {
-        Debug.Log("jumpOnce: " + jumpOnce);
+        /*Debug.Log("jumpOnce: " + jumpOnce);
         jumpTime += Time.deltaTime;
         if (jumpOnce == 0)
         {
-            if (boxCollider2d.IsTouchingLayers(ground))
+            if (playerFeet.IsTouchingLayers(ground))
             {
                 if (Input.GetKey(KeyCode.Space))
                 {
                     jumpOnce = 1;
                     jumpTime = 0.0f;
-                    rigidbody2D.velocity = Vector2.up * jumpValue;
+                    playerBody.velocity = Vector2.up * jumpValue;
                     playerJumpAnim();
                 }
             }
-            else if (rigidbody2D.velocity.y <= 0)
+            else if (playerBody.velocity.y <= 0)
             {
                 jumpOnce = 1;
             }
@@ -159,32 +241,62 @@ public class playController : MonoBehaviour
             if (Input.GetKey(KeyCode.Space) && (jumpTime > jumpTimedt))
             {
                 jumpOnce = 2;
-                if (rigidbody2D.velocity.y > 0)
+                if (playerBody.velocity.y > 0)
                 {
-                    rigidbody2D.velocity += Vector2.up * jumpValue;
+                    playerBody.velocity += Vector2.up * jumpValue;
                 }
                 else
                 {
-                    rigidbody2D.velocity = Vector2.up * jumpValue;
+                    playerBody.velocity = Vector2.up * jumpValue;
                 }
                 playerJumpAnim();
             }
         }
-        if (boxCollider2d.IsTouchingLayers(ground))// && rigidbody2D.velocity.y == 0)
+        if (playerFeet.IsTouchingLayers(ground))// && playerBody.velocity.y == 0)
         {
             jumpOnce = 0;
             animator.SetBool("leftJump", false);
             animator.SetBool("rightJump", false);
         }
-        if (rigidbody2D.velocity.y < 0)
+        if (playerBody.velocity.y < 0)
         {
             animator.SetBool("leftJump", false);
             animator.SetBool("rightJump", false);
-            rigidbody2D.velocity += Vector2.up * speed * Time.deltaTime;
+            playerBody.velocity += Vector2.up * speed * Time.deltaTime;
         }
-        else if (rigidbody2D.velocity.y > 0)
+        else if (playerBody.velocity.y > 0)
         {
-            rigidbody2D.velocity += Vector2.up * (speed + 1) * Time.deltaTime;
+            playerBody.velocity += Vector2.up * (speed + 1) * Time.deltaTime;
+        }*/
+        Debug.Log("jumpOnce: " + jumpOnce);
+        if (isGround)
+        {
+            jumpOnce = 0;
+        } else if (playerBody.velocity.y <= 0 && jumpOnce == 0)
+        {
+            jumpOnce = 1;
+        }
+        if (Input.GetButtonDown("Jump"))
+        {
+            if (isGround)
+            {
+                curState = State.Jump;
+                animator.SetBool("isJump", true);
+                jumpOnce = 1;
+                Vector2 jumpVector = new Vector2(playerBody.velocity.x, jumpSpeed);
+                playerBody.velocity = jumpVector;
+            } else
+            {
+                if (jumpOnce == 1)// && (jumpTime > jumpTimedt))
+                {
+                    curState = State.Jump;
+                    animator.SetBool("isJump", true);
+                    animator.SetBool("isFall", false);
+                    jumpOnce = 2;
+                    Vector2 jumpVector = new Vector2(playerBody.velocity.x, jumpSpeed);
+                    playerBody.velocity = jumpVector;
+                }
+            }
         }
     }
 }

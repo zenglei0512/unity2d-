@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class trap : MonoBehaviour
+public class trapChange : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -20,13 +20,9 @@ public class trap : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            bool isGameOver = collision.gameObject.GetComponent<playController>().isGameOver;
-            if (isGameOver)
-            {
-                return;
-            }
-            collision.gameObject.GetComponent<playController>().isGameOver = true;
-            collision.gameObject.GetComponent<Animator>().SetTrigger("isDeath");
+            Transform parent = transform.parent;
+            Animator animator = parent.GetComponent<Animator>();
+            animator.SetBool("isChange", true);
         }
     }
 }

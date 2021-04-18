@@ -16,7 +16,7 @@ TagManager:
   - ground
   - soil
   - trap
-  - 
+  - player
   - 
   - 
   - 
@@ -40,4 +40,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: trap
+    uniqueID: 568053419
+    locked: 0
+  - name: soil
+    uniqueID: 1642016185
+    locked: 0
+  - name: ground
+    uniqueID: 671397989
+    locked: 0
+  - name: player
+    uniqueID: 3460257911
     locked: 0
