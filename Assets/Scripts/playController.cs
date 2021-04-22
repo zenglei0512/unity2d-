@@ -30,6 +30,7 @@ public class playController : MonoBehaviour
     BoxCollider2D playerFeet;
     CapsuleCollider2D Capsule;
     Rigidbody2D playerBody;
+    gameController gameController;
     State curState = State.Idle;
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,7 @@ public class playController : MonoBehaviour
         Capsule = GetComponent<CapsuleCollider2D>();
         playerFeet = GetComponent<BoxCollider2D>();
         playerBody = GetComponent<Rigidbody2D>();
+        gameController = GameObject.Find("Canvas").GetComponent<gameController>();
         CapsuleSizeX = Capsule.size.x;
     }
 
@@ -268,7 +270,7 @@ public class playController : MonoBehaviour
         {
             playerBody.velocity += Vector2.up * (speed + 1) * Time.deltaTime;
         }*/
-        Debug.Log("jumpOnce: " + jumpOnce);
+
         if (isGround)
         {
             jumpOnce = 0;
@@ -276,8 +278,9 @@ public class playController : MonoBehaviour
         {
             jumpOnce = 1;
         }
-        if (Input.GetButtonDown("Jump"))
-        {
+        //if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.J))
+            {
             if (isGround)
             {
                 curState = State.Jump;
@@ -298,5 +301,10 @@ public class playController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void playerDeath()
+    {
+        gameController.resetGame();
     }
 }
