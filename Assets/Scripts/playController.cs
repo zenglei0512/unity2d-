@@ -279,7 +279,7 @@ public class playController : MonoBehaviour
             jumpOnce = 1;
         }
         //if (Input.GetButtonDown("Jump"))
-        if (Input.GetKeyDown(KeyCode.J))
+        if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.J))
             {
             if (isGround)
             {
