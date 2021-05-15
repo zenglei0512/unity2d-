@@ -12,7 +12,7 @@ public class gameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        audioPlay = GameObject.Find("Main Camera").GetComponent<audioPlay>();
+        audioPlay = gameObject.AddComponent<audioPlay>();
         buttonAudio = transform.Find("Button").GetComponent<AudioSource>();
     }
 
@@ -61,19 +61,20 @@ public class gameController : MonoBehaviour
 
     public void pauseGame()
     {
+        buttonAudio.Play();
         button.SetActive(true);
         Time.timeScale = 0;
         isPause = true;
     }
 
-    public void gotoMenu()
+    public void gotoLevel()
     {
         Time.timeScale = 1.0f;
         isPause = false;
         buttonAudio.Play();
         audioPlay.audioCallBack(buttonAudio, () =>
         {
-            SceneManager.LoadScene("start");
+            SceneManager.LoadScene("selectMaps");
         });
     }
 }

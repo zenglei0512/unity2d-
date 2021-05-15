@@ -11,14 +11,8 @@ public class startGame : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        audioPlay = GameObject.Find("Main Camera").GetComponent<audioPlay>();
+        audioPlay = gameObject.AddComponent<audioPlay>();
         buttonAudio = GetComponent<AudioSource>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void gameStart()
@@ -26,7 +20,7 @@ public class startGame : MonoBehaviour
         buttonAudio.Play();
         audioPlay.audioCallBack(buttonAudio, () =>
         {
-            SceneManager.LoadScene("map1");
+            SceneManager.LoadScene("selectMaps");
         });
     }
 

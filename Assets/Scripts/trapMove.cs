@@ -7,13 +7,7 @@ public class trapMove : MonoBehaviour
     public float moveTime = 5f;
     public Vector3 dirVector;
     bool isMove = false;
-    Vector3 initPosition;
     Transform parent;
-    // Start is called before the first frame update
-    void Start()
-    {
-        initPosition = transform.parent.localPosition;
-    }
 
     // Update is called once per frame
     void Update()

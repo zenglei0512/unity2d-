@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/start.unity
     guid: 58ddf09594dc2428284679710d354b28
   - enabled: 1
+    path: Assets/Scenes/selectMaps.unity
+    guid: 935f83de0d7d345b6bfab6e423863efe
+  - enabled: 1
     path: Assets/Scenes/map1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

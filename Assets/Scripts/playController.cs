@@ -31,6 +31,7 @@ public class playController : MonoBehaviour
     CapsuleCollider2D Capsule;
     Rigidbody2D playerBody;
     gameController gameController;
+    saveMapData saveMapData;
     State curState = State.Idle;
     // Start is called before the first frame update
     void Start()
@@ -41,6 +42,8 @@ public class playController : MonoBehaviour
         playerBody = GetComponent<Rigidbody2D>();
         gameController = GameObject.Find("Canvas").GetComponent<gameController>();
         CapsuleSizeX = Capsule.size.x;
+        saveMapData = gameObject.AddComponent<saveMapData>();
+        saveMapData.saveCurrentMapIndex();
     }
 
     // Update is called once per frame
@@ -280,7 +283,7 @@ public class playController : MonoBehaviour
         }
         //if (Input.GetButtonDown("Jump"))
         if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.J))
-            {
+        {
             if (isGround)
             {
                 curState = State.Jump;
