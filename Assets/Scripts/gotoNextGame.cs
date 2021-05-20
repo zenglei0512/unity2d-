@@ -24,8 +24,15 @@ public class gotoNextGame : MonoBehaviour
                 {
                     saveMapData.MaxMapIndex = saveMapData.CurrentMapIndex;
                 }
-                //SceneManager.LoadScene("map" + saveMapData.CurrentMapIndex.ToString());
-                SceneManager.LoadScene("selectMaps");
+                if (saveMapData.CurrentMapIndex > 6)
+                {
+                    SceneManager.LoadScene("selectMaps");
+                }
+                else
+                {
+                    SceneManager.LoadScene("map" + saveMapData.CurrentMapIndex.ToString());
+                }
+
             }
         }
     }

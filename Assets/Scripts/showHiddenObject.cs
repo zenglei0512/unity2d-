@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class showHiddenObject : MonoBehaviour
 {
-    public GameObject item;
+    public GameObject[] item;
     public float showTime = 0.5f;
     float dt = 0.0f;
 
@@ -15,7 +15,10 @@ public class showHiddenObject : MonoBehaviour
         if (dt >= showTime)
         {
             dt = 0.0f;
-            item.SetActive(!item.activeInHierarchy);
+            for (int i = 0; i < item.Length; i++)
+            {
+                item[i].SetActive(!item[i].activeInHierarchy);
+            }
         }
     }
 }

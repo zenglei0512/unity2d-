@@ -61,8 +61,8 @@ public class gameController : MonoBehaviour
 
     public void pauseGame()
     {
-        buttonAudio.Play();
         button.SetActive(true);
+        buttonAudio.Play();
         Time.timeScale = 0;
         isPause = true;
     }
